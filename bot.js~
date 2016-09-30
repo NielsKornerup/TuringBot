@@ -70,7 +70,7 @@ function postMessage(text) {
     }
   }
   else if(/^goto$/.test(text)){
-      botResponse = "Goto considered harmful";
+      botResponse = "goto considered harmful";
   }
   else if(/^quote$/.test(text)){
     var x = Math.random();
