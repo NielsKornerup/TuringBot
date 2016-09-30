@@ -3,9 +3,9 @@ var HTTPS = require('https');
 var botID = process.env.BOT_ID;
 
 function respond() {
-  var request = new Object,//JSON.parse(this.req.chunks[0]),
+  var request = JSON.parse(this.req.chunks[0]),
       botRegex = /^\/turing .*$/;
-  request.text = "/turing help";
+
   if(request.text && botRegex.test(request.text)) {
     this.res.writeHead(200);
     postMessage(request.text.substring(8));
@@ -35,7 +35,7 @@ function postMessage(text) {
       botResponse = "@"+sentence[1]+" " + sentence[2];
     }
     else{
-      botResponse = "Invalid command. Type \\turing help for a list of valid commands.";
+      botResponse = "Invalid command. Type /turing help for a list of valid commands.";
     }
     
   }
