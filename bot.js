@@ -4,17 +4,23 @@ var botID = process.env.BOT_ID;
 function respond() {
   var request = JSON.parse(this.req.chunks[0]),
       botRegex = /^\/turing .*$/;
-      if(request.text){
-        console.log("Asked to respond with text :" + request.text);
-      }
-      else{
-        console.log("error with text");
-      }
+  if(request.text){
+    console.log("Asked to respond with text :" + request.text);
+  }
+  else{
+    console.log("error with text");
+  }
   if(request.text && botRegex.test(request.text)) {
     this.res.writeHead(200);
     postMessage(request.text.substring(8));
     this.res.end();
-  } else {
+  } 
+  else if(request.text && /goto/.test(request.text)){
+    this.res.writeHead(200);
+    postMessage("goto");
+    this.res.end();
+  }
+  else {
     console.log("don't care");
     this.res.writeHead(200);
     this.res.end();
@@ -63,6 +69,9 @@ function postMessage(text) {
       botResponse = "Invalid xkcd format. Proper format is comic name in lowercase with _ for spaces."
     }
   }
+  else if(/^goto$/.test(text)){
+      botResponse = "goto considered harmful";
+  }
   else if(/^quote$/.test(text)){
     var x = Math.random();
     if(x > 2/3){
@@ -99,7 +108,7 @@ function postMessage(text) {
         "type"  : "image",
         "url"   : image
       }]
-    }
+    };
   }
 
   console.log('sending ' + botResponse + ' to ' + botID);
