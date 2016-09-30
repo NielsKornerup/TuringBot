@@ -87,7 +87,7 @@ function postMessage(text) {
       botResponse = "Actually, in Java 8...";
     }
   }
-  else if(/^status$/){
+  else if(/^status$/.test(text)){
     var rand = Math.random();
     if(rand>3/4){
       botResponse = "feels good man";
@@ -96,7 +96,7 @@ function postMessage(text) {
       botResponse = "meh";
     }
     else if(rand>1/4){
-      botResponse = "rip";
+      botResponse = "feels bad man";
     }
     else{
       botResponse = "it's over";
