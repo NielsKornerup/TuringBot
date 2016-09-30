@@ -24,8 +24,13 @@ function addQuoteToDB(quote){
 
 function getRandomQuoteFromDB(){
     try{
-      var results = client.query('SELECT * FROM quotes;');
-      return results.quote[Math.floor(results.length*Math.random())];
+      
+      var results = [];
+      client.query('SELECT * FROM quotes;').on('row', function(row) {
+      console.log('user "%s" is %d years old', row.name, row.user_age);
+      results.push(row);
+    });;
+      return results[Math.floor(results.length*Math.random())];
     }
     catch(err){
       console.log(err);
