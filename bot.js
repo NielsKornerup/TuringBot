@@ -36,7 +36,7 @@ function postMessage(text) {
   }
   else if(/^recurse .*/.test(text)){
     var initial = text.substring(8);
-    for(var i = 0; i < initial.length; i++){
+    for(var i = 0; i < initial.length-1; i++){
       botResponse += initial.substring(i);
     }
   }
@@ -48,7 +48,7 @@ function postMessage(text) {
       botResponse = "no";
     }
   }
-  else if(/^random$/){
+  else if(/^random$/.test(text)){
     botResponse = String((Math.floor(Math.random() * 100)));
   }
   else{
