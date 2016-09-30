@@ -3,9 +3,9 @@ var HTTPS = require('https');
 var botID = process.env.BOT_ID;
 
 function respond() {
-  var request = JSON.parse(this.req.chunks[0]),
+  var request = new Object,//JSON.parse(this.req.chunks[0]),
       botRegex = /^\/turing .*$/;
-
+  request.text = "/turing help";
   if(request.text && botRegex.test(request.text)) {
     this.res.writeHead(200);
     postMessage(request.text.substring(8));
@@ -19,20 +19,17 @@ function respond() {
 
 function postMessage(text) {
   var botResponse, options, body, botReq;
-  var Regex = /^help$/;
-  if(Regex.test(text)){
+
+  if(/^help/.test(text)){
      botResponse = "current valid commands are: \n test - the turing bot passes the turing test. \n echo [text] - the turing bot says [text] \n tell [person] [text]. Tells [person] [text]. \n help - displays this information.";
   }
-  Regex = /^test$/;
-  if(Regex.test(text)){
+  else if(/^test$/.test(text)){
      botResponse = "I am a human.";
   }
-  Regex = /^echo .*/;
-  if(Regex.test(text)){
+  else if(/^echo .*/.test(text)){
     botResponse = text.substring(5);
   }
-  Regex = /^tell .*/;
-  if(Regex.test(text)){
+  else if(/^tell .*/.test(text)){
     var sentence = text.split(" ");
     if(sentence.length == 3){
       botResponse = "@"+sentence[1]+" " + sentence[2];
@@ -43,7 +40,7 @@ function postMessage(text) {
     
   }
   else{
-     botResponse = "Invalid command. Type \\turing help for a list of valid commands.";
+     botResponse = "Invalid command. Type /turing help for a list of valid commands.";
   }
 
   options = {
