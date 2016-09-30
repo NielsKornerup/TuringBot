@@ -99,6 +99,7 @@ function postMessage(text) {
       "bot_id" : botID,
       "text" : botResponse
     };
+    console.log('sending ' + botResponse + ' to ' + botID);
   }
   else{
     body = {
@@ -109,9 +110,9 @@ function postMessage(text) {
         "url"   : image
       }]
     };
+      console.log('sending image' + image + ' to ' + botID);
   }
 
-  console.log('sending ' + botResponse + ' to ' + botID);
 
   botReq = HTTPS.request(options, function(res) {
       if(res.statusCode == 202) {
