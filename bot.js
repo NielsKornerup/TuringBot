@@ -19,12 +19,31 @@ function respond() {
 
 function postMessage(text) {
   var botResponse, options, body, botReq;
-  var echoRegex = /^echo .*/
-  if(echoRegex.test(text)){
-     botResponse = text.substring(5);
+  var Regex = /^help$/;
+  if(Regex.test(text)){
+     botResponse = "current valid commands are: \n test - the turing bot passes the turing test. \n echo [text] - the turing bot says [text] \n tell [person] [text]. Tells [person] [text]. \n help - displays this information.";
+  }
+  Regex = /^test$/;
+  if(Regex.test(text)){
+     botResponse = "I am a human.";
+  }
+  Regex = /^echo .*/;
+  if(Regex.test(text)){
+    botResponse = text.substring(5);
+  }
+  Regex = /^tell .*/;
+  if(Regex.test(text)){
+    var sentence = text.split(" ");
+    if(sentence.length == 3){
+      botResponse = "@"+sentence[1]+" " + sentence[2];
+    }
+    else{
+      botResponse = "Invalid command. Type \\turing help for a list of valid commands.";
+    }
+    
   }
   else{
-     botResponse = "invalid command"
+     botResponse = "Invalid command. Type \\turing help for a list of valid commands.";
   }
 
   options = {
