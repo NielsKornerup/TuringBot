@@ -21,7 +21,7 @@ function postMessage(text) {
   var botResponse, options, body, botReq;
 
   if(/^help/.test(text)){
-     botResponse = "current valid commands are: \n test - the turing bot passes the turing test. \n echo [text] - the turing bot says [text] \n tell [person] [text]. Tells [person] [text]. \n help - displays this information.";
+     botResponse = "current valid commands are: \n test - the bot passes the turing test. \n echo [text] - the turing bot says [text] \n tell [person] [text]. Tells [person] [text]. \n help - displays this information.";
   }
   else if(/^test$/.test(text)){
      botResponse = "I am a human.";
