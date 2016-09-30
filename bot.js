@@ -61,12 +61,15 @@ function postMessage(text) {
   }
   else if(/^xkcd .+/.test(text)){
     var data = text.split(" ");
-    if(data.length == 2){
+    for(var i = 2; i < data.length; i++){
+      data[1]+="_"+data[i];
+    }
+    if(data.length > 1){
       isImage = true;
-      image = "http://imgs.xkcd.com/comics/"+data[1]+".png";
+      image = "http://imgs.xkcd.com/comics/"+data[1].toLowerCase();+".png";
     }
     else{
-      botResponse = "Invalid xkcd format. Proper format is comic name in lowercase with _ for spaces."
+      botResponse = "Invalid xkcd format."
     }
   }
   else if(/^goto$/.test(text)){
