@@ -29,7 +29,8 @@ function getRandomQuoteFromDB(){
       client.query('SELECT * FROM quotes;').on('row', function(row) {
       console.log('user "%s" is %d years old', row.name, row.user_age);
       results.push(row);
-    });;
+      });
+      console.log(results);
       return results[Math.floor(results.length*Math.random())];
     }
     catch(err){
