@@ -4,7 +4,7 @@ var botID = process.env.BOT_ID;
 
 function respond() {
   var request = JSON.parse(this.req.chunks[0]),
-      botRegex = /^\/turing /;
+      botRegex = /^\/turing *$/;
 
   if(request.text && botRegex.test(request.text)) {
     this.res.writeHead(200);
@@ -17,7 +17,7 @@ function respond() {
   }
 }
 
-function postMessage(var text) {
+function postMessage(text) {
   var botResponse, options, body, botReq;
   var echoRegex = /^echo */
   if(echoRegex.test(text){
