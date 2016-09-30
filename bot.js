@@ -34,8 +34,9 @@ function postMessage(text) {
     botResponse = text.substring(5);
   }
   else if(/^recurse .*/.test(text)){
-    var initial = text.substring(7);
-    for(var i = 0; i < initial.length; i++){
+    var initial = text.substring(8);
+    botResponse = "";
+    for(var i = 0; i <= initial.length; i++){
       botResponse = botResponse + initial.substring(0,i);
     }
   }
