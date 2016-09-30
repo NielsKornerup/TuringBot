@@ -23,9 +23,6 @@ function postMessage(var text) {
   if(echoRegex.test(text){
      botResponse = text.substring(5);
   }
-  else{
-     botResponse = "invalid command"
-  }
 
   options = {
     hostname: 'api.groupme.com',
