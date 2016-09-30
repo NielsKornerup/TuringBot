@@ -36,8 +36,8 @@ function postMessage(text) {
   }
   else if(/^recurse .*/.test(text)){
     var initial = text.substring(8);
-    for(var i = 1; i < initial.length; i++){
-      botResponse += initial.substring(0,initial.length - i);
+    for(var i = 0; i < initial.length; i++){
+      botResponse += initial.substring(i);
     }
   }
   else if(/^halts .*/){
@@ -49,7 +49,7 @@ function postMessage(text) {
     }
   }
   else if(/^random$/){
-    botResponse = Math.floor(Math.random() * 100).toString();
+    botResponse = String((Math.floor(Math.random() * 100)));
   }
   else{
      botResponse = "Invalid command. Type /turing help for a list of valid commands.";
