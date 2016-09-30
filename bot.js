@@ -40,7 +40,7 @@ function postMessage(text) {
       botResponse += initial.substring(i);
     }
   }
-  else if(/^halts .*/){
+  else if(/^halts .*/.test(text)){
     if(Math.random()>.5){
       botResponse = "yes";
     }
