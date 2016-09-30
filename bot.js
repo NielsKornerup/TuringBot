@@ -66,7 +66,7 @@ function postMessage(text) {
     }
     if(data.length > 1){
       isImage = true;
-      image = "http://imgs.xkcd.com/comics/"+data[1].toLowerCase();+".png";
+      image = "http://imgs.xkcd.com/comics/"+data[1].toLowerCase()+".png";
     }
     else{
       botResponse = "Invalid xkcd format."
