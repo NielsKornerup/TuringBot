@@ -60,7 +60,7 @@ function postMessage(text) {
     botResponse = String((Math.floor(Math.random() * 100)));
   }
   else if(/^xkcd .+/.test(text)){
-    var data = text.split;
+    var data = text.split(" ");
     if(data.length == 2){
       isImage = true;
       image = "http://imgs.xkcd.com/comics/"+data[1]+".png";
