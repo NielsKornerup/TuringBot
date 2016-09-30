@@ -1,5 +1,38 @@
 var HTTPS = require('https');
 var botID = process.env.BOT_ID;
+const express = require('express');
+const router = express.Router();
+var pg = require('pg');
+pg.defaults.ssl = true;
+var client;
+
+pg.connect(process.env.DATABASE_URL, function(err, Client) {
+  if (err) {console.log(err);}
+  client = Client;
+});
+
+function addQuoteToDB(quote){
+  try{
+    client.query('INSERT INTO quotes (quote) values($1)',[quote]);
+    return "Quote has been added.";
+  }
+  catch(err){
+    console.log(err);
+    return "Failed to add quote";
+  }
+}
+
+function getRandomQuoteFromDB(){
+    try{
+      var results = client.query('SELECT * FROM quotes;');
+      return results.quote[Math.floor(results.length*Math.random())];
+    }
+    catch(err){
+      console.log(err);
+      return "There was an error with the database call.";
+    }
+}
+
 
 function respond() {
   var request = JSON.parse(this.req.chunks[0]),
@@ -75,16 +108,13 @@ function postMessage(text) {
   else if(/^goto$/.test(text)){
       botResponse = "Goto considered harmful";
   }
-  else if(/^quote$/.test(text)){
-    var x = Math.random();
-    if(x > 2/3){
-      botResponse = "Every culture has its dumpling.";
-    }
-    else if(x > 1/3){
-      botResponse = "pi^2 = e^2 = 3^2 = 10";
+  else if(/^quote.*/.test(text)){
+    text = text.substring(6);
+    if(text.length >6 && /^add .+/.test(text)){
+      botResponse=addQuoteToDB(text.substring(4));
     }
     else{
-      botResponse = "Actually, in Java 8...";
+      botResponse=getRandomQuoteFromDB();
     }
   }
   else if(/^status$/.test(text)){
