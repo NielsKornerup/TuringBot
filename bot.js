@@ -2,18 +2,13 @@ var HTTPS = require('https');
 var botID = process.env.BOT_ID;
 const express = require('express');
 const router = express.Router();
-var pg = require('pg');
-pg.defaults.ssl = true;
-var client;
-
-pg.connect(process.env.DATABASE_URL, function(err, Client) {
-  if (err) {console.log(err);}
-  client = Client;
-});
+var pg = require('pg-native');
+var client= new pg();
+client.connectSync(process.env.DATABASE_URL+'?ssl=true');
 
 function addQuoteToDB(quote){
   try{
-    client.query('INSERT INTO quotes (quote) values($1)',[quote]);
+    client.querySync('INSERT INTO quotes (quote) values($1)',[quote]);
     return "Quote has been added.";
   }
   catch(err){
@@ -24,14 +19,10 @@ function addQuoteToDB(quote){
 
 function getRandomQuoteFromDB(){
     try{
-      
-      var results = [];
-      client.query('SELECT * FROM quotes;').on('row', function(row) {
-      console.log('user "%s" is %d years old', row.name, row.user_age);
-      results.push(row);
-      });
+      console.log("ran");
+      results = client.querySync('SELECT * FROM quotes;');
       console.log(results);
-      return results[Math.floor(results.length*Math.random())];
+      return results[Math.floor(results.length*Math.random())].quote;
     }
     catch(err){
       console.log(err);
