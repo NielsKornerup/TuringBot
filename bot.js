@@ -4,11 +4,26 @@ const express = require('express');
 const router = express.Router();
 var pg = require('pg-native');
 var client= new pg();
+var markovClient = new pg();
 client.connectSync(process.env.DATABASE_URL+'?ssl=true');
+console.log(process.env.HEROKU_POSTGRESQL_BRONZE_URL);
+markovClient.connectSync(process.env.HEROKU_POSTGRESQL_BRONZE_URL+'?ssl=true');
+
+function addToData(text, next){
+  try{
+    markovClient.querySync('CREATE TABLE IF NOT EXISTS $1 (text varchar(1))',[text]);
+    markovClient.querySync('INSERT INTO $1 (text) values ($2)',[text], [next]);
+    return true;
+  }
+  catch(err){
+    console.log(err);
+    return false;
+  }
+}
 
 function addQuoteToDB(quote){
   try{
-    client.querySync('INSERT INTO quotes (quote) values($1)',[quote]);
+    client.querySync('INSERT INTO quotes (quote) values ($1)',[quote]);
     return "Quote has been added.";
   }
   catch(err){
@@ -50,8 +65,19 @@ function respond() {
     postMessage("goto");
     this.res.end();
   }
-  else {
-    console.log("don't care");
+  else if(request.text){
+    try{
+      console.log("Recording");
+      for(var i = 0; i < request.text.length-3; i++){
+        addToData(request.text.substring(i, i+2), request.text.charAt(i+3));
+      }
+    }
+    catch(err){
+      console.log("Something is wrong with collecting data. Error: "+err);
+    }
+  }
+  else{
+    console.log("Don't care");
     this.res.writeHead(200);
     this.res.end();
   }
