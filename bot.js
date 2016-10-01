@@ -63,7 +63,7 @@ function postMessage(text) {
   var botResponse, options, body, botReq;
   console.log("Current text is: " + text);
   if(/^help/.test(text)){
-     botResponse = "current valid commands are:\n test - the bot passes the turing test.\n echo [text] - the turing bot says [text]\n halts [program p] [input i] - determines if p will halt with input i\n recurse [text] - prints a recursed version of [text].\n random - gives you an integer between 0 and 99.\n quote - gives one of a collection of quotes\n xkcd [comic_name] - finds the xkcd with the given name.\n status - lets you know how the bot is feeling\n help - displays this information.";
+     botResponse = "current valid commands are:\n test - the bot passes the turing test.\n echo [text] - the turing bot says [text]\n halts [program p] [input i] - determines if p will halt with input i\n recurse [text] - prints a recursed version of [text].\n random - gives you an integer between 0 and 99.\n quote [text]- gives one of a collection of quotes, or makes [text] a quote.\n xkcd [comic_name] - finds the xkcd with the given name.\n status - lets you know how the bot is feeling\n help - displays this information.";
   }
   else if(/^test$/.test(text)){
      botResponse = "I am a human.";
