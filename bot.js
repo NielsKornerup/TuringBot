@@ -8,8 +8,7 @@ client.connectSync(process.env.DATABASE_URL+'?ssl=true');
 
 function addQuoteToDB(quote){
   try{
-    var sql = escape('INSERT INTO quotes (quote) values (%L);',quote);
-    client.querySync(sql);
+    client.querySync('INSERT INTO quotes (quote) values ($1);',[quote]);
     return "Quote has been added.";
   }
   catch(err){
