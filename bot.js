@@ -8,8 +8,14 @@ client.connectSync(process.env.DATABASE_URL+'?ssl=true');
 
 function addQuoteToDB(quote){
   try{
-    client.querySync('INSERT INTO quotes (quote) values ($1);',[quote]);
-    return "Quote has been added.";
+    results = client.querySync("SELECT * FROM quotes WHERE quote = '$1';",[quote]);
+    if(results.length==0){
+      client.querySync('INSERT INTO quotes (quote) values ($1);',[quote]);
+      return "Quote has been added.";
+    }
+    else{
+      return "Quote already in database";
+    }
   }
   catch(err){
     console.log(err);
@@ -155,7 +161,7 @@ function postMessage(text) {
         "url"   : image
       }]
     };
-      console.log('sending image' + image + ' to ' + botID);
+    console.log('sending image' + image + ' to ' + botID);
   }
 
 
@@ -166,6 +172,7 @@ function postMessage(text) {
         console.log('rejecting bad status code ' + res.statusCode);
       }
   });
+
 
   botReq.on('error', function(err) {
     console.log('error posting message '  + JSON.stringify(err));
