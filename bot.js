@@ -5,6 +5,7 @@ const router = express.Router();
 var pg = require('pg-native');
 var client= new pg();
 client.connectSync(process.env.DATABASE_URL+'?ssl=true');
+var status = "meh";
 
 function addQuoteToDB(quote){
   try{
@@ -48,7 +49,7 @@ function respond() {
   }
   if(request.text && botRegex.test(request.text)) {
     this.res.writeHead(200);
-    postMessage(request.text.substring(8));
+    postMessage(request.name, request.text.substring(8));
     this.res.end();
   } 
   else if(request.text && /goto/.test(request.text)){
@@ -63,13 +64,13 @@ function respond() {
   }
 }
 
-function postMessage(text) {
+function postMessage(name, text) {
   var isImage = false;
   var image = "";
   var botResponse, options, body, botReq;
   console.log("Current text is: " + text);
   if(/^help/.test(text)){
-     botResponse = "current valid commands are:\n test - the bot passes the turing test.\n echo [text] - the turing bot says [text]\n halts [program p] [input i] - determines if p will halt with input i\n recurse [text] - prints a recursed version of [text].\n random - gives you an integer between 0 and 99.\n quote [text]- gives one of a collection of quotes, or makes [text] a quote.\n xkcd [comic_name] - finds the xkcd with the given name.\n status - lets you know how the bot is feeling\n help - displays this information.";
+     botResponse = "current valid commands are:\n test - the bot passes the turing test.\n echo [text] - the turing bot says [text]\n halts [program p] [input i] - determines if p will halt with input i\n recurse [text] - prints a recursed version of [text].\n random - gives you an integer between 0 and 99.\n quote [text]- gives one of a collection of quotes, or makes [text] a quote.\n xkcd [comic_name] - finds the xkcd with the given name.\n status [text] - sets the bots status to [text] if no text is provided, gives the current status.\n help - displays this information.";
   }
   else if(/^test$/.test(text)){
      botResponse = "I am a human.";
@@ -120,21 +121,17 @@ function postMessage(text) {
       botResponse=getRandomQuoteFromDB();
     }
   }
-  else if(/^status$/.test(text)){
-    var rand = Math.random();
-    if(rand>3/4){
-      botResponse = "feels good man";
-    }
-    else if(rand>1/2){
-      botResponse = "meh";
-    }
-    else if(rand>1/4){
-      botResponse = "feels bad man";
-    }
-    else{
-      botResponse = "it's over";
-    }
+  else if(/^status$/.test(text) && ! /^TuringMachine$/.test(name)){
+     botResponse = status;
   }
+  else if(/^status$/.test(text)){
+     botResponse = "nice try";
+  }
+  else if(/^status .*$/.test(text)){
+     status = text.substring(7);
+     botResponse = "status set to " + status;
+  }
+
   else{
      botResponse = "Invalid command. Type /turing help for a list of valid commands.";
   }
