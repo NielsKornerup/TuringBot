@@ -19,8 +19,8 @@ function changeStatus(status){
 
 function getStatus(){
   try{
-    var result = client.querySync("SELECT * FROM status;");
-    return result.value;
+    results = client.querySync("SELECT * FROM status;");
+    return results[0].value;
   }
   catch(err){
     console.log(err);
