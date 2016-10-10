@@ -5,7 +5,28 @@ const router = express.Router();
 var pg = require('pg-native');
 var client= new pg();
 client.connectSync(process.env.DATABASE_URL+'?ssl=true');
-var status = "meh";
+
+function changeStatus(status){
+  try{
+    client.querySync("DELETE FROM status; + INSERT INTO status (value) values ('$1');",[status]);
+    return "Status set to " + status;
+  }
+  catch(err){
+    console.log(err);
+    return "Failed to change status";
+  }
+}
+
+function getStatus(){
+  try{
+    var result = client.querySync("SELECT * FROM status;");
+    return result.value;
+  }
+  catch(err){
+    console.log(err);
+    return "Failed to get status";
+  }
+}
 
 function addQuoteToDB(quote){
   try{
@@ -109,9 +130,6 @@ function postMessage(name, text) {
       botResponse = "Invalid xkcd format."
     }
   }
-  else if(/^goto$/.test(text)){
-      botResponse = "Goto considered harmful";
-  }
   else if(/^quote.*/.test(text)){
     text = text.substring(6);
     if(text.length >6 && /^add .+/.test(text)){
@@ -122,16 +140,18 @@ function postMessage(name, text) {
     }
   }
   else if(/^status$/.test(text) && ! /^TuringMachine$/.test(name)){
-     botResponse = status;
+     botResponse = getStatus();
   }
   else if(/^status$/.test(text)){
      botResponse = "nice try";
   }
   else if(/^status .*$/.test(text)){
-     status = text.substring(7);
-     botResponse = "status set to " + status;
+     changeStatus(text.substring(7));
+     botResponse = "status set to " + text.substring(7);
   }
-
+  else if(/goto/.test(text)){
+      botResponse = "Goto considered harmful";
+  }
   else{
      botResponse = "Invalid command. Type /turing help for a list of valid commands.";
   }
