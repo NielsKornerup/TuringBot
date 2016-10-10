@@ -8,7 +8,8 @@ client.connectSync(process.env.DATABASE_URL+'?ssl=true');
 
 function changeStatus(status){
   try{
-    client.querySync("DELETE FROM status; INSERT INTO status (value) values ($1);",[status]);
+    client.querySync("DELETE FROM status;");
+client.querySync("INSERT INTO status (value) values ($1);",[status]);
     return "Status set to " + status;
   }
   catch(err){
