@@ -8,7 +8,7 @@ client.connectSync(process.env.DATABASE_URL+'?ssl=true');
 
 function changeStatus(status){
   try{
-    client.querySync("DELETE FROM status; + INSERT INTO status (value) values ('$1');",[status]);
+    client.querySync("DELETE FROM status; INTO INSERT status (value) values ($1);",[status]);
     return "Status set to " + status;
   }
   catch(err){
@@ -75,7 +75,7 @@ function respond() {
   } 
   else if(request.text && /goto/.test(request.text)){
     this.res.writeHead(200);
-    postMessage("goto");
+    postMessage(request.name, "goto");
     this.res.end();
   }
   else{
