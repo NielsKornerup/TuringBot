@@ -108,6 +108,22 @@ function postMessage(text) {
       botResponse = "Invalid xkcd format."
     }
   }
+  else if(/^lmgtfy .+/.test(text)){
+    // let me google that for you
+    var queryParts = text.substring("lmgtfy".length + 1).split(" ");
+    if(queryParts.length == 1 && queryParts[0].length == 0){
+      botResponse = "Invalid query.";
+    }else{
+      var queryURL = "http://lmgtfy.com/?q=";
+      // lmgtfy requires words be separated by a '+'
+      for(var i = 0; i < queryParts.length - 1; i++){
+        queryURL += encodeURIComponent(queryParts[i]) + "+";
+      }
+      queryURL += encodeURIComponent(queryParts[queryParts.length - 1]);
+      // not sure if there is anything special you need to put to post links
+      botResponse = queryURL;
+    }
+  }
   else if(/^goto$/.test(text)){
       botResponse = "Goto considered harmful";
   }
