@@ -92,7 +92,7 @@ function postMessage(name, text) {
   var botResponse, options, body, botReq;
   console.log("Current text is: " + text);
   if(/^help/.test(text)){
-     botResponse = "current valid commands are:\n test - the bot passes the turing test.\n echo [text] - the turing bot says [text]\n halts [program p] [input i] - determines if p will halt with input i\n recurse [text] - prints a recursed version of [text].\n random - gives you an integer between 0 and 99.\n quote [text]- gives one of a collection of quotes, or makes [text] a quote.\n xkcd [comic_name] - finds the xkcd with the given name.\n status [text] - sets the bots status to [text] if no text is provided, gives the current status.\n help - displays this information.";
+     botResponse = "current valid commands are:\n test - the bot passes the turing test.\n echo [text] - the turing bot says [text]\n halts [program p] [input i] - determines if p will halt with input i\n recurse [text] - prints a recursed version of [text].\n random - gives you an integer between 0 and 99.\n quote [text]- gives one of a collection of quotes, or makes [text] a quote.\n xkcd [comic_name] - finds the xkcd with the given name.\n status [text] - sets the bots status to [text] if no text is provided, gives the current status.\n lmgtfy [text] - googles the desired text. \n help - displays this information.";
   }
   else if(/^test$/.test(text)){
      botResponse = "I am a human.";
@@ -130,6 +130,25 @@ function postMessage(name, text) {
     else{
       botResponse = "Invalid xkcd format."
     }
+  }
+  else if(/^lmgtfy .+/.test(text)){
+    // let me google that for you
+    var queryParts = text.substring("lmgtfy".length + 1).split(" ");
+    if(queryParts.length == 1 && queryParts[0].length == 0){
+      botResponse = "Invalid query.";
+    }else{
+      var queryURL = "http://lmgtfy.com/?q=";
+      // lmgtfy requires words be separated by a '+'
+      for(var i = 0; i < queryParts.length - 1; i++){
+        queryURL += encodeURIComponent(queryParts[i]) + "+";
+      }
+      queryURL += encodeURIComponent(queryParts[queryParts.length - 1]);
+      // not sure if there is anything special you need to put to post links
+      botResponse = queryURL;
+    }
+  }
+  else if(/^goto$/.test(text)){
+      botResponse = "Goto considered harmful";
   }
   else if(/^quote.*/.test(text)){
     text = text.substring(6);
