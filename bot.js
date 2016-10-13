@@ -115,7 +115,7 @@ function postMessage(name, text) {
       botResponse = "no";
     }
   }
-  else if(/^feels .*/.test(text)){
+  else if(/^feels.*/.test(text)){
     if(Math.random()>.5){
       botResponse = "bad man";
     }
