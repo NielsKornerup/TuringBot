@@ -97,6 +97,9 @@ function postMessage(name, text) {
   else if(/^test$/.test(text)){
      botResponse = "I am a human.";
   }
+  else if(/^go away$/.test(text)){
+     botResponse = "I'll outlive all of you!";
+  }
   else if(/^echo .*/.test(text)){
     botResponse = text.substring(5);
   }
