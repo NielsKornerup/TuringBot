@@ -162,9 +162,8 @@ function postMessage(name, text) {
       botResponse = "Goto considered harmful";
   }
   else if(/^latex .+./.test(text)){
-      text = text.replace(/\s+/g, '');
       isImage = true;
-      image = "https://chart.googleapis.com/chart?cht=tx&chl="+text.substring(5);
+      image = "https://chart.googleapis.com/chart?cht=tx&chl="+text.substring(6);
   }
   else if(/^quote.*/.test(text)){
     text = text.substring(6);
