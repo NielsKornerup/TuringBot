@@ -162,6 +162,7 @@ function postMessage(name, text) {
       botResponse = "Goto considered harmful";
   }
   else if(/^latex .+./.test(text){
+      text = text.replace(/\s+/g, '');
       botResponse = "https://chart.googleapis.com/chart?cht=tx&chl="+text;
   }
   else if(/^quote.*/.test(text)){
