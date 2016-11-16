@@ -161,8 +161,8 @@ function postMessage(name, text) {
   else if(/^goto$/.test(text)){
       botResponse = "Goto considered harmful";
   }
-  else if(/^latex .+./.test(text)){
-      botResponse = "https://chart.googleapis.com/chart?cht=tx&chl="+text;
+  else if(/^latex .*/.test(text)){
+      botResponse = "https://chart.googleapis.com/chart?cht=tx&chl="+text.substring(6);
   }
   else if(/^quote.*/.test(text)){
     text = text.substring(6);
