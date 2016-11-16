@@ -164,6 +164,7 @@ function postMessage(name, text) {
   else if(/^latex .+./.test(text)){
       isImage = true;
       image = "https://chart.googleapis.com/chart?cht=tx&chl="+text.substring(6);
+      image = encodeURIComponent(image);
   }
   else if(/^quote.*/.test(text)){
     text = text.substring(6);
