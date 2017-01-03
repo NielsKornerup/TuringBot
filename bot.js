@@ -59,6 +59,20 @@ function getRandomQuoteFromDB(){
     }
 }
 
+function saveImage(image) {
+  try {
+
+  }
+  catch (err){
+    console.log(err);
+    return "Failed to add image!";
+  }
+}
+
+function getRandomImage() {
+
+}
+
 
 function respond() {
   var request = JSON.parse(this.req.chunks[0]),
@@ -199,6 +213,15 @@ function postMessage(name, text) {
     }
     else{
       botResponse=getRandomQuoteFromDB();
+    }
+  }
+  else if (/^pic.*/.test(text)) {
+    text = text.substring(4);
+    if(text.length >4 && /^add .+/.test(text)){
+      botResponse=saveImage(text.substring(4));
+    }
+    else{
+      botResponse=getRandomImage()
     }
   }
   else if(/^status$/.test(text) && ! /^TuringMachine$/.test(name)){
