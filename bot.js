@@ -92,7 +92,7 @@ function postMessage(name, text) {
   var botResponse, options, body, botReq;
   console.log("Current text is: " + text);
   if(/^help/.test(text)){
-     botResponse = "current valid commands are:\n test - the bot passes the turing test.\n echo [text] - the turing bot says [text]\n halts [program p] [input i] - determines if p will halt with input i\n recurse [text] - prints a recursed version of [text].\n random - gives you an integer between 0 and 99.\n 8ball - generates a random 8-ball response.\n quote - gives one of a collection of quotes.\n quote add [text] - adds a quote to the list.\n xkcd [comic_name] - finds the xkcd with the given name.\n status [text] - sets the bots status to [text] if no text is provided, gives the current status.\n lmgtfy [text] - googles the desired text.\n feels - displays how Alan feels right now.\n go away - tell the TuringMachine to go away.\n latex - returns image containing LaTeX render of your input.\n help - displays this information.";
+     botResponse = "current valid commands are:\n test - the bot passes the turing test.\n echo [text] - the turing bot says [text]\n halts [program p] [input i] - determines if p will halt with input i\n recurse [text] - prints a recursed version of [text].\n random - gives you an integer between 0 and 99.\n 8ball - generates a random 8-ball response.\n quote - gives one of a collection of quotes.\n quote add [text] - adds a quote to the list.\n xkcd [comic_name] - finds the xkcd with the given name.\n status [text] - sets the bots status to [text] if no text is provided, gives the current status.\n lmgtfy [text] - googles the desired text.\n feels - displays how Alan feels right now.\n go away - tell the TuringMachine to go away.\n latex - returns image containing LaTeX render of your input.\n zo - greets Zo.\n help - displays this information.";
   }
   else if(/^test$/.test(text)){
      botResponse = "I am a human.";
@@ -210,6 +210,13 @@ function postMessage(name, text) {
   else if(/^status .*$/.test(text)){
      changeStatus(text.substring(7));
      botResponse = "status set to " + text.substring(7);
+  }
+  else if(/^zo$/.test(text)){
+     if(Math.random() < .5){
+       botResponse = "@Zo Hello there!";
+     } else {
+       botResponse = "@Zo I love you";
+     }
   }
   else if(/goto/.test(text)){
       botResponse = "Goto considered harmful";
