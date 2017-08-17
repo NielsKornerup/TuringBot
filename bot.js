@@ -248,7 +248,6 @@ function postMessage(name, text) {
     method: 'POST'
   };
 
-  return;
   botReq = HTTPS.request(options, function(res) {
       if(res.statusCode == 202) {
         //neat
