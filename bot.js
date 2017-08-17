@@ -6,6 +6,9 @@ var pg = require('pg-native');
 var client= new pg();
 client.connectSync(process.env.DATABASE_URL+'?ssl=true');
 
+const handlers = require("./handlers.js");
+const rt = new handlers.MessageHandlerRouter();
+
 function changeStatus(status){
   try{
     client.querySync("DELETE FROM status;");
@@ -73,7 +76,7 @@ function respond() {
     this.res.writeHead(200);
     postMessage(request.name, request.text.substring(8));
     this.res.end();
-  } 
+  }
   else if(request.text && /goto/.test(request.text)){
     this.res.writeHead(200);
     postMessage(request.name, "goto");
@@ -86,48 +89,49 @@ function respond() {
   }
 }
 
-function postMessage(name, text) {
-  var isImage = false;
-  var image = "";
-  var botResponse, options, body, botReq;
-  console.log("Current text is: " + text);
-  if(/^help/.test(text)){
-     botResponse = "current valid commands are:\n test - the bot passes the turing test.\n echo [text] - the turing bot says [text]\n halts [program p] [input i] - determines if p will halt with input i\n recurse [text] - prints a recursed version of [text].\n random - gives you an integer between 0 and 99.\n 8ball - generates a random 8-ball response.\n quote - gives one of a collection of quotes.\n quote add [text] - adds a quote to the list.\n xkcd [comic_name] - finds the xkcd with the given name.\n status [text] - sets the bots status to [text] if no text is provided, gives the current status.\n lmgtfy [text] - googles the desired text.\n feels - displays how Alan feels right now.\n go away - tell the TuringMachine to go away.\n latex - returns image containing LaTeX render of your input.\n help - displays this information.";
-  }
-  else if(/^test$/.test(text)){
-     botResponse = "I am a human.";
-  }
-  else if(/^go away$/.test(text)){
-     botResponse = "I'll outlive all of you!";
-  }
-  else if(/^echo .*/.test(text)){
-    botResponse = text.substring(5);
-  }
-  else if(/^recurse .*/.test(text)){
-    var initial = text.substring(8);
+// Message Handle routing starts here
+
+rt.regex(/^test$/, function(msg){
+    return "I am a human.";
+}, "test - the bot passes the turing test.");
+
+rt.regex(/^go away$/, function(msg){
+    return "I'll outlive all of you!";
+}, "go away - tell the TuringMachine to go away.");
+
+rt.regex(/^echo .*/, function(msg){
+    return msg.text.substring(5);
+}, "echo [text] - the turing bot says [text]");
+
+rt.regex(/^recurse .*/, function(msg){
+    var initial = msg.text.substring(8);
     botResponse = "";
     for(var i = 0; i < initial.length; i++){
       botResponse += initial.substring(i, initial.length);
     }
-  }
-  else if(/^halts .*/.test(text)){
+    return botResponse;
+}, "recurse [text] - prints a recursed version of [text].");
+
+rt.regex(/^halts .*/, function(msg){
     if(Math.random()>.5){
-      botResponse = "yes";
+      return "yes";
     }
     else{
-      botResponse = "no";
+      return "no";
     }
-  }
-  else if(/^feels.*/.test(text)){
+}, "halts [program p] [input i] - determines if p will halt with input i");
+
+rt.regex(/^feels.*/, function(msg){
     if(Math.random()>.5){
-      botResponse = "bad man";
+      return "bad man";
     }
     else{
-      botResponse = "good man";
+      return "good man";
     }
-  }
-  else if(/^8ball.*/.test(text)){
-	var EightBallResponses = [
+}, "feels - displays how Alan feels right now.");
+
+rt.regex(/^8ball.*/, function(msg){
+    var EightBallResponses = [
 		"Most definitely yes.",
 		"For sure.",
 		"As I see it, yes.",
@@ -151,72 +155,92 @@ function postMessage(name, text) {
 		"NO - It may cause disease contraction."
 	];
     var chosenResponse = Math.floor(Math.random() * EightBallResponses.length);
-	botResponse = EightBallResponses[chosenResponse];
-  }
-  else if(/^random$/.test(text)){
-    botResponse = String((Math.floor(Math.random() * 100)));
-  }
-  else if(/^xkcd .+/.test(text)){
-    var data = text.split(" ");
+	return EightBallResponses[chosenResponse];
+}, "8ball - generates a random 8-ball response.");
+
+rt.regex(/^random$/, function(msg){
+    return String((Math.floor(Math.random() * 100)));
+}, "random - gives you an integer between 0 and 99.");
+
+rt.regex(/^xkcd .+/, function(msg){
+    var data = msg.text.split(" ");
     for(var i = 2; i < data.length; i++){
       data[1]+="_"+data[i];
     }
     if(data.length > 1){
-      isImage = true;
-      image = "http://imgs.xkcd.com/comics/"+data[1].toLowerCase()+".png";
+      var image = "http://imgs.xkcd.com/comics/"+data[1].toLowerCase()+".png";
+      return handlers.Response("", image);
     }
     else{
-      botResponse = "Invalid xkcd format."
+      return "Invalid xkcd format.";
     }
-  }
-  else if(/^lmgtfy .+/.test(text)){
+}, "xkcd [comic_name] - finds the xkcd with the given name.");
+
+rt.regex(/^lmgtfy .+/, function(msg){
     // let me google that for you
-    var queryParts = text.substring("lmgtfy".length + 1).split(" ");
+    var queryParts = msg.text.substring("lmgtfy".length + 1).split(" ");
     if(queryParts.length == 1 && queryParts[0].length == 0){
-      botResponse = "Invalid query.";
-    }else{
-      var queryURL = "http://lmgtfy.com/?q=";
-      // lmgtfy requires words be separated by a '+'
-      for(var i = 0; i < queryParts.length - 1; i++){
-        queryURL += encodeURIComponent(queryParts[i]) + "+";
-      }
-      queryURL += encodeURIComponent(queryParts[queryParts.length - 1]);
-      // not sure if there is anything special you need to put to post links
-      botResponse = queryURL;
+      return "Invalid query.";
     }
-  }
-  else if(/^goto$/.test(text)){
-      botResponse = "Goto considered harmful";
-  }
-  else if(/^latex .+./.test(text)){
-      isImage = true;
-      image = "https://chart.googleapis.com/chart?cht=tx&chl="+encodeURIComponent(text.substring(6));
-  }
-  else if(/^quote.*/.test(text)){
-    text = text.substring(6);
+    var queryURL = "http://lmgtfy.com/?q=";
+    // lmgtfy requires words be separated by a '+'
+    for(var i = 0; i < queryParts.length - 1; i++){
+      queryURL += encodeURIComponent(queryParts[i]) + "+";
+    }
+    queryURL += encodeURIComponent(queryParts[queryParts.length - 1]);
+    // not sure if there is anything special you need to put to post links
+    return queryURL;
+}, "lmgtfy [text] - googles the desired text.");
+
+rt.regex(/^goto$/, function(msg){
+    return "Goto considered harmful";
+});
+
+rt.regex(/^latex .+./, function(msg){
+    var image = "https://chart.googleapis.com/chart?cht=tx&chl="+encodeURIComponent(msg.text.substring(6));
+    return handlers.Response("", image);
+}, "latex - returns image containing LaTeX render of your input.");
+
+rt.regex(/^quote.*/, function(msg){
+    text = msg.text.substring(6);
     if(text.length >6 && /^add .+/.test(text)){
-      botResponse=addQuoteToDB(text.substring(4));
+      return addQuoteToDB(text.substring(4));
     }
     else{
-      botResponse=getRandomQuoteFromDB();
+      return getRandomQuoteFromDB();
     }
-  }
-  else if(/^status$/.test(text) && ! /^TuringMachine$/.test(name)){
-     botResponse = getStatus();
-  }
-  else if(/^status$/.test(text)){
-     botResponse = "nice try";
-  }
-  else if(/^status .*$/.test(text)){
-     changeStatus(text.substring(7));
-     botResponse = "status set to " + text.substring(7);
-  }
-  else if(/goto/.test(text)){
-      botResponse = "Goto considered harmful";
-  }
-  else{
-     botResponse = "Invalid command. Type /turing help for a list of valid commands.";
-  }
+}, "quote - gives one of a collection of quotes.\n" +
+   "quote add [text] - adds a quote to the list."
+);
+
+rt.regex(/^status$/, function(msg){
+    if(/^TuringMachine$/.test(msg.name)){
+        return "nice try";
+    }else {
+        return getStatus();
+    }
+}, "status [text] - sets the bots status to [text] if no text is provided, gives the current status.");
+
+rt.regex(/^status .*$/, function(msg){
+    changeStatus(msg.text.substring(7));
+    botResponse = "status set to " + msg.text.substring(7);
+});
+
+rt.regex(/goto/, function(msg){
+    return "Goto considered harmful";
+});
+
+function postMessage(name, text) {
+  var isImage = false;
+  var image = "";
+  var botResponse, options, body, botReq;
+  console.log("Current text is: " + text);
+
+  var hresp = rt.process(new handlers.Message(name, text));
+  console.log("sending " + hresp.text + " to " + botID);
+  var body = hresp.generateResponseJson();
+  body["bot_id"] = botID;
+
 
   options = {
     hostname: 'api.groupme.com',
@@ -224,26 +248,7 @@ function postMessage(name, text) {
     method: 'POST'
   };
 
-  if(!isImage){  
-    body = {
-      "bot_id" : botID,
-      "text" : botResponse
-    };
-    console.log('sending ' + botResponse + ' to ' + botID);
-  }
-  else{
-    body = {
-      "bot_id" : botID,
-      "text" : "",
-      "attachments" : [{
-        "type"  : "image",
-        "url"   : image
-      }]
-    };
-    console.log('sending image' + image + ' to ' + botID);
-  }
-
-
+  return;
   botReq = HTTPS.request(options, function(res) {
       if(res.statusCode == 202) {
         //neat
